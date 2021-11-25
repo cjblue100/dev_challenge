@@ -1,14 +1,16 @@
-import React, { Component } from "react";
-import { Table } from "react-bootstrap"
-import {Button,ButtonToolbar} from 'react-bootstrap'
-import { AddDepModal } from "./AddDepModal";
 
+import React, { Component } from 'react';
+import { Table } from 'react-bootstrap';
+
+import { Button, ButtonToolbar } from 'react-bootstrap';
+
+import { EditDepModal } from './EditDepModal';
 
 export class Department extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { deps: [] , addModalShow:false}
+        this.state = { deps: [], addModalShow: false, editModalShow: false }
     }
 
     refreshList() {
@@ -27,12 +29,23 @@ export class Department extends Component {
         this.refreshList();
     }
 
+    deleteDep(depid) {
+        if (window.confirm('Are you sure?')) {
+            fetch(process.env.REACT_APP_API + 'department/' + depid, {
+                method: 'DELETE',
+                header: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+        }
+    }
     render() {
-        const { deps } = this.state;
-        let addModalShow=()=>this.setState({addModalShow:false})
+        const { deps, depid, depname } = this.state;
+      
+        let editModalClose = () => this.setState({ editModalShow: false });
         return (
-
-            <div className="mt-5 d-flex justify-content-left">
+            <div >
                 <Table className="mt-4" striped bordered hover size="sm">
                     <thead>
                         <tr>
@@ -46,19 +59,35 @@ export class Department extends Component {
                             <tr key={dep.DepartmentId}>
                                 <td>{dep.DepartmentId}</td>
                                 <td>{dep.DepartmentName}</td>
-                                <td>Edit / Delete</td>
+                                <td>
+                                    <ButtonToolbar>
+                                        <Button className="mr-2" variant="info"
+                                            onClick={() => this.setState({
+                                                editModalShow: true,
+                                                depid: dep.DepartmentId, depname: dep.DepartmentName
+                                            })}>
+                                            Edit
+                                        </Button>
 
+                                        <Button className="mr-2" variant="danger"
+                                            onClick={() => this.deleteDep(dep.DepartmentId)}>
+                                            Delete
+                                        </Button>
 
-                            </tr>
+                                        <EditDepModal show={this.state.editModalShow}
+                                            onHide={editModalClose}
+                                            depid={depid}
+                                            depname={depname} />
+                                    </ButtonToolbar>
 
-                        )}
+                                </td>
+
+                            </tr>)}
                     </tbody>
-                </Table>
-                <ButtonToolbar>
-                    <Button variant='primary'
-                    onClick={()=>this.setState({addModalShow:true})}>Add Department</Button>
-                </ButtonToolbar>
 
+                </Table>
+
+               
             </div>
         )
     }

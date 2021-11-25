@@ -5,11 +5,11 @@ import {
   Route
 } from "react-router-dom";
 import {Department}  from './components/department';
-import Employee from './components/employee';
+import {Employee} from './components/employee';
 function App() {
   return (
    
-      <div className="App">
+      <div className="container">
         <h3 className="m-3 d-flex justify-content-center">Dev Challenge</h3>
         <Authentication/>
        <Routes>
